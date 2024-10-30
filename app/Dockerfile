@@ -1,0 +1,21 @@
+FROM python:3.12-slim
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends curl postgresql-client && \
+    curl -sSL https://install.python-poetry.org | python3 - && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+ENV PATH="/root/.local/bin:$PATH"
+ENV POETRY_VIRTUALENVS_CREATE=false
+
+WORKDIR /app
+
+COPY poetry.lock pyproject.toml /app/
+RUN poetry install --no-root --only main
+
+COPY . /app
+
+EXPOSE 8000
+
+CMD ["python", "main.py"]
