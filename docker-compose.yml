@@ -32,7 +32,7 @@ services:
     healthcheck:
       test: [
         "CMD-SHELL",
-        "psql -U postgres -h db -d crypto -tAc \"SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'prices');\" | grep -q 't'"
+        "psql -U ${DB_USER} -h ${DB_HOST} -d ${DB_NAME} -tAc \"SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'prices');\" | grep -q 't'"
       ]
       interval: 10s
       timeout: 5s
@@ -51,7 +51,7 @@ services:
       - "8000:8000"
     command: >
       sh -c "
-            until PGPASSWORD=password psql -h db -U postgres -d crypto -c 'SELECT 1 FROM prices LIMIT 1;';
+            until PGPASSWORD=${DB_PASSWORD} psql -h ${DB_HOST} -U ${DB_USER} -d ${DB_NAME} -c 'SELECT 1 FROM prices LIMIT 1;';
             do
               echo 'Waiting for prices table...';
               sleep 5;
@@ -70,7 +70,7 @@ services:
         condition: service_healthy
     command: >
       sh -c "
-            until PGPASSWORD=password psql -h db -U postgres -d crypto -c 'SELECT 1 FROM prices LIMIT 1;';
+            until PGPASSWORD=${DB_PASSWORD} psql -h ${DB_HOST} -U ${DB_USER} -d ${DB_NAME} -c 'SELECT 1 FROM prices LIMIT 1;';
             do
               echo 'Waiting for prices table...';
               sleep 5;
